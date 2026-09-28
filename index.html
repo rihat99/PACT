@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PACT: End-to-End Learning of Human Pose, Contacts, and Forces from Video</title>
+  <meta name="description" content="PACT turns a single video into world-space 3D motion, hand and foot contacts, and the forces at those contacts, in one end-to-end model. No motion capture, no force plates, no staged pipeline.">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PACT: End-to-End Learning of Human Pose, Contacts, and Forces from Video">
+  <meta property="og:description" content="PACT turns a single video into world-space 3D motion, hand and foot contacts, and the forces at those contacts, in one end-to-end model. No motion capture, no force plates, no staged pipeline.">
+  <meta property="og:image" content="https://rihat99.github.io/PACT/static/img/teaser.jpg">
+  <meta property="og:url" content="https://rihat99.github.io/PACT/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/svg+xml" href="static/img/favicon.svg">
+
+  <!-- Inter (with optical size axis) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap">
+
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body id="top">
+
+  <!-- ===== Icon sprite (inline SVG, referenced with <use>) ===== -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-doc" viewBox="0 0 24 24">
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-github" viewBox="0 0 16 16">
+      <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M10 8.6v6.8l5.6-3.4z" fill="currentColor"/>
+    </symbol>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ===== Sticky navigation ===== -->
+  <header class="nav" id="nav">
+    <nav class="nav__inner container" aria-label="Primary">
+      <a class="nav__brand" href="#top" aria-label="PACT, back to top">PACT</a>
+      <ul class="nav__links">
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#video">Video</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#citation">Citation</a></li>
+      </ul>
+      <div class="nav__actions">
+        <a class="pill pill--sm" href="#" data-placeholder="true" aria-label="Paper on arXiv (coming soon)">
+          <svg class="icon" aria-hidden="true"><use href="#i-doc"/></svg><span>arXiv</span>
+        </a>
+        <a class="pill pill--sm" href="https://github.com/rihat99/PACT" aria-label="Code on GitHub">
+          <svg class="icon" aria-hidden="true"><use href="#i-github"/></svg><span>Code</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ===== Hero ===== -->
+    <section class="hero" aria-labelledby="title">
+      <div class="container hero__text">
+        <p class="eyebrow">In submission · 2026</p>
+        <h1 id="title" class="wordmark">PACT</h1>
+        <p class="hero__subtitle">
+          End-to-End Learning of Human <span class="c-pose">Pose</span>,
+          <span class="c-contacts">Contacts</span>, and
+          <span class="c-forces">Forces</span> from Video
+        </p>
+
+        <ul class="authors" aria-label="Authors">
+          <li><a href="#" data-placeholder="true">Rikhat Akizhanov</a><sup>1</sup></li>
+          <li><a href="#" data-placeholder="true">Yangsong Zhang</a><sup>1</sup></li>
+          <li><a href="#" data-placeholder="true">Nikolai Kaliazin</a><sup>1</sup></li>
+          <li><a href="#" data-placeholder="true">Peter Wolf</a><sup>2</sup></li>
+          <li><a href="#" data-placeholder="true">Yoshihiko Nakamura</a><sup>1</sup></li>
+          <li><a href="#" data-placeholder="true">Pascal Fua</a><sup>3</sup></li>
+          <li><a href="#" data-placeholder="true">Fabio Pizzati</a><sup>1</sup></li>
+          <li><a href="#" data-placeholder="true">Ivan Laptev</a><sup>1</sup></li>
+        </ul>
+        <ul class="affiliations" aria-label="Affiliations">
+          <li><sup>1</sup>MBZUAI</li>
+          <li><sup>2</sup>Sensory-Motor Systems Lab, ETH Zürich</li>
+          <li><sup>3</sup>EPFL</li>
+        </ul>
+
+        <div class="hero__buttons">
+          <a class="pill pill--dark" href="#" data-placeholder="true" aria-label="Paper on arXiv (coming soon)">
+            <svg class="icon" aria-hidden="true"><use href="#i-doc"/></svg><span>arXiv</span>
+          </a>
+          <a class="pill pill--dark" href="https://github.com/rihat99/PACT" aria-label="Code on GitHub">
+            <svg class="icon" aria-hidden="true"><use href="#i-github"/></svg><span>Code</span>
+          </a>
+          <a class="pill pill--dark" href="#video" aria-label="Watch the video">
+            <svg class="icon" aria-hidden="true"><use href="#i-play"/></svg><span>Video</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero strip: five portrait clips (scroll-snap row on mobile) -->
+      <div class="container container--wide">
+        <div class="strip" aria-label="PACT predictions on example videos">
+          <div class="card card--portrait">
+            <video muted loop playsinline preload="none" data-autoplay
+                   poster="static/media/hero/strip_1.jpg" data-src="static/media/hero/strip_1.mp4"
+                   aria-label="Climbing dyno with predicted pose, contacts, and forces"></video>
+          </div>
+          <div class="card card--portrait">
+            <video muted loop playsinline preload="none" data-autoplay
+                   poster="static/media/hero/strip_2.jpg" data-src="static/media/hero/strip_2.mp4"
+                   aria-label="Yoga pose with predicted pose, contacts, and forces"></video>
+          </div>
+          <div class="card card--portrait">
+            <video muted loop playsinline preload="none" data-autoplay
+                   poster="static/media/hero/strip_3.jpg" data-src="static/media/hero/strip_3.mp4"
+                   aria-label="Climbing with predicted pose, contacts, and forces"></video>
+          </div>
+          <div class="card card--portrait">
+            <video muted loop playsinline preload="none" data-autoplay
+                   poster="static/media/hero/strip_4.jpg" data-src="static/media/hero/strip_4.mp4"
+                   aria-label="Fitness exercise with predicted pose, contacts, and forces"></video>
+          </div>
+          <div class="card card--portrait">
+            <video muted loop playsinline preload="none" data-autoplay
+                   poster="static/media/hero/strip_5.jpg" data-src="static/media/hero/strip_5.mp4"
+                   aria-label="Competition climbing with predicted pose, contacts, and forces"></video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TL;DR + Abstract ===== -->
+    <section class="section" id="abstract" aria-labelledby="abstract-title">
+      <div class="container">
+        <div class="tldr">
+          <p class="eyebrow">TL;DR</p>
+          <p class="tldr__text">PACT turns a single video into world-space 3D motion, hand and foot contacts, and the forces at those contacts, in one end-to-end model. No motion capture, no force plates, no staged pipeline.</p>
+        </div>
+
+        <header class="section-head">
+          <p class="eyebrow">Overview</p>
+          <h2 id="abstract-title">Abstract</h2>
+        </header>
+        <p class="prose">Human motion, environmental contacts, and interaction forces are governed by common physical laws, yet existing approaches typically separate visual pose reconstruction from contact and force estimation. This separation limits joint reasoning and can propagate errors between stages. We introduce PACT, an end-to-end model that jointly learns to estimate human pose, contacts and contact forces from monocular video. Our approach augments a human reconstruction foundation model with learnable contact-force tokens and a temporal transformer that integrates visual features with world-space motion. Joint prediction heads refine human poses and estimate contacts and forces, while physics-based supervision encourages consistency between the reconstructed motion and interaction forces. To address the scarcity of force annotations, we develop a data annotation pipeline that combines contact labeling with physics-based motion and force optimization, producing training supervision from synthetic and real-world videos. We also introduce a real-world climbing benchmark ForceWall with climbing videos and corresponding ground-truth contact forces obtained from the force sensors. Experiments demonstrate state-of-the-art contact and force estimation, outperforming staged reconstruction approaches and generalizing to interactions beyond the training distribution. These results support end-to-end joint learning as an effective approach to recovering human motion and physical interactions from video.</p>
+      </div>
+    </section>
+
+    <!-- ===== Video ===== -->
+    <section class="section section--tint" id="video" aria-labelledby="video-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Video</p>
+          <h2 id="video-title">PACT in motion</h2>
+          <p class="lede">A narrated walkthrough of the motivation, the model, the labeling pipeline, and results.</p>
+        </header>
+        <div class="card card--wide">
+          <video controls playsinline preload="metadata" poster="static/media/main/pact.jpg"
+                 aria-label="PACT supplementary video">
+            <source src="static/media/main/pact.mp4" type="video/mp4">
+            Your browser does not support embedded video.
+          </video>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Method ===== -->
+    <section class="section" id="method" aria-labelledby="method-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Method</p>
+          <h2 id="method-title">From stages to end-to-end</h2>
+          <p class="lede">Existing methods estimate pose, contacts, and forces in separate stages, so errors in one stage propagate to the next. PACT learns all three jointly, end to end, from a single video.</p>
+        </header>
+
+        <!-- Staged vs end-to-end comparison -->
+        <div class="compare" role="img" aria-label="Staged pipelines pass video through pose, then contacts, then forces. PACT maps video directly to pose, contacts, and forces in one model.">
+          <div class="compare__row compare__row--staged">
+            <span class="compare__label">Staged</span>
+            <div class="flow">
+              <span class="chip">Video</span><span class="flow__arrow"></span>
+              <span class="chip">Pose</span><span class="flow__arrow"></span>
+              <span class="chip">Contacts</span><span class="flow__arrow"></span>
+              <span class="chip">Forces</span>
+            </div>
+          </div>
+          <div class="compare__row">
+            <span class="compare__label compare__label--strong">PACT</span>
+            <div class="flow">
+              <span class="chip">Video</span><span class="flow__arrow"></span>
+              <span class="chip chip--model">PACT</span><span class="flow__arrow"></span>
+              <span class="chip-group">
+                <span class="chip"><i class="dot dot--pose"></i>Pose</span>
+                <span class="chip"><i class="dot dot--contacts"></i>Contacts</span>
+                <span class="chip"><i class="dot dot--forces"></i>Forces</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architecture -->
+        <div class="figure-block">
+          <figure class="figure">
+            <a href="static/img/architecture.png" target="_blank" rel="noopener" aria-label="Open the architecture figure in full size">
+              <img src="static/img/architecture.png" width="1788" height="724" loading="lazy" decoding="async"
+                   alt="PACT architecture: a frozen SAM 3D Body backbone with learnable contact-force tokens, camera motion lifting the pose to world space, a temporal transformer, and heads that predict pose, gravity, contacts, and forces with a physics loss.">
+            </a>
+          </figure>
+          <div class="figure-block__text">
+            <h3>Architecture</h3>
+            <ol class="steps">
+              <li>PACT builds on the SAM 3D Body backbone, kept frozen.</li>
+              <li>Learnable contact-force tokens capture interaction cues in every frame.</li>
+              <li>Camera motion lifts the pose into world space, and a temporal transformer reasons over time.</li>
+              <li>Heads refine the pose and predict gravity, contacts, and forces, with a physics loss tying motion and forces together.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Annotation pipeline -->
+        <div class="figure-block">
+          <figure class="figure">
+            <a href="static/img/pipeline.png" target="_blank" rel="noopener" aria-label="Open the annotation pipeline figure in full size">
+              <img src="static/img/pipeline.png" width="1672" height="905" loading="lazy" decoding="async"
+                   alt="Annotation pipeline: foundation models recover the person, the scene, and the camera, then a physics-based optimization solves for consistent motion, contacts, and forces used as training labels.">
+            </a>
+          </figure>
+          <div class="figure-block__text">
+            <h3>Annotation pipeline</h3>
+            <ol class="steps">
+              <li>Force labels are scarce, so we built a physics-based labeling pipeline.</li>
+              <li>Foundation models recover the person, the scene, and the camera; an optimization solves for physically consistent motion, contacts, and forces.</li>
+              <li>We use it to label synthetic BEDLAM2 videos and real climbing videos from the web.</li>
+              <li>These labels are imperfect, with noisy forces and forces on limbs that touch nothing. Learning from many of them, PACT becomes more robust than its own teacher.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- ForceWall -->
+        <div class="forcewall">
+          <img class="forcewall__photo" src="static/img/forcewall.jpg" width="2268" height="4032" loading="lazy" decoding="async"
+               alt="The ForceWall: an instrumented indoor climbing wall with sensor-equipped holds.">
+          <div class="forcewall__text">
+            <p class="eyebrow">Benchmark</p>
+            <h3>ForceWall</h3>
+            <p>Our instrumented climbing wall, whose holds measure the force applied by every limb. Paired with video, it gives a real-world benchmark with ground-truth contact forces for climbing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Results ===== -->
+    <section class="section section--tint" id="results" aria-labelledby="results-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Results</p>
+          <h2 id="results-title">From a single video to physics</h2>
+          <p class="lede">Every clip below is predicted by PACT from a single monocular video. Force arrows are drawn in <span class="c-forces">yellow</span>.</p>
+        </header>
+
+        <!-- Climbing in world space -->
+        <div class="subsection">
+          <h3>Climbing in world space</h3>
+          <p class="sub-lede">The input video, the reconstruction seen from the camera, and a side view of the same motion in world space.</p>
+          <div class="stack">
+            <figure class="clip">
+              <div class="card card--triptych">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/world/boulder_1.jpg" data-src="static/media/world/boulder_1.mp4"
+                       aria-label="Bouldering: input video, camera view, and side view of the PACT reconstruction"></video>
+              </div>
+              <figcaption class="panel-labels" aria-hidden="true"><span>Input</span><span>Camera view</span><span>Side view</span></figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--triptych">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/world/climb_2023.jpg" data-src="static/media/world/climb_2023.mp4"
+                       aria-label="Wall climbing: input video, camera view, and side view of the PACT reconstruction"></video>
+              </div>
+              <figcaption class="panel-labels" aria-hidden="true"><span>Input</span><span>Camera view</span><span>Side view</span></figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- Input vs PACT toggle -->
+        <div class="subsection">
+          <div class="toggle-card">
+            <div class="toggle-stage" data-autoplay-group>
+              <video class="is-active" muted loop playsinline preload="none"
+                     poster="static/media/toggle/dyno_pact.jpg" data-src="static/media/toggle/dyno_pact.mp4"
+                     data-view="pact" aria-label="Climbing dyno with PACT predictions overlaid"></video>
+              <video muted loop playsinline preload="none"
+                     poster="static/media/toggle/dyno_input.jpg" data-src="static/media/toggle/dyno_input.mp4"
+                     data-view="input" aria-label="Climbing dyno, raw input video" aria-hidden="true"></video>
+            </div>
+            <div class="toggle-card__text">
+              <h3>Input vs PACT</h3>
+              <p>The same clip with identical timing. Switch between the raw input and the predicted pose, contacts, and forces.</p>
+              <div class="segmented" role="group" aria-label="Choose which video to show">
+                <button type="button" data-show="input" aria-pressed="false">Input</button>
+                <button type="button" data-show="pact" aria-pressed="true">PACT</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Beyond climbing -->
+        <div class="subsection">
+          <h3>Beyond climbing</h3>
+          <p class="sub-lede">Interactions outside the training distribution. Input on the left, world-space side view on the right.</p>
+          <div class="grid grid--2">
+            <figure class="clip">
+              <div class="card card--pair">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/beyond/olympics_2.jpg" data-src="static/media/beyond/olympics_2.mp4"
+                       aria-label="Balance beam: input and side view"></video>
+              </div>
+              <figcaption>Balance beam</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--pair">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/beyond/yoga_1.jpg" data-src="static/media/beyond/yoga_1.mp4"
+                       aria-label="Yoga: input and side view"></video>
+              </div>
+              <figcaption>Yoga</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--pair">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/beyond/full_body_2.jpg" data-src="static/media/beyond/full_body_2.mp4"
+                       aria-label="Fitness: input and side view"></video>
+              </div>
+              <figcaption>Fitness</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--pair">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/beyond/box_step.jpg" data-src="static/media/beyond/box_step.mp4"
+                       aria-label="Box step: input and side view"></video>
+              </div>
+              <figcaption>Box step</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--pair">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/beyond/backflip.jpg" data-src="static/media/beyond/backflip.mp4"
+                       aria-label="Backflip: input and side view"></video>
+              </div>
+              <figcaption>Backflip</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--pair">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/beyond/tic_tac.jpg" data-src="static/media/beyond/tic_tac.mp4"
+                       aria-label="Tic-tac: input and side view"></video>
+              </div>
+              <figcaption>Tic-tac</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <!-- Contacts and forces on the input video -->
+        <div class="subsection">
+          <h3>Contacts and forces on the input video</h3>
+          <p class="sub-lede">Predictions drawn directly over the input footage.</p>
+          <div class="grid grid--3">
+            <figure class="clip">
+              <div class="card card--landscape">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/overlay/aerial.jpg" data-src="static/media/overlay/aerial.mp4"
+                       aria-label="Aerial with predicted contacts and forces"></video>
+              </div>
+              <figcaption>Aerial</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--landscape">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/overlay/back_handspring.jpg" data-src="static/media/overlay/back_handspring.mp4"
+                       aria-label="Back handspring with predicted contacts and forces"></video>
+              </div>
+              <figcaption>Back handspring</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--landscape">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/overlay/back_walkover.jpg" data-src="static/media/overlay/back_walkover.mp4"
+                       aria-label="Back walkover with predicted contacts and forces"></video>
+              </div>
+              <figcaption>Back walkover</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--landscape">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/overlay/backflip.jpg" data-src="static/media/overlay/backflip.mp4"
+                       aria-label="Backflip with predicted contacts and forces"></video>
+              </div>
+              <figcaption>Backflip</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--landscape">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/overlay/olympics_2.jpg" data-src="static/media/overlay/olympics_2.mp4"
+                       aria-label="Balance beam with predicted contacts and forces"></video>
+              </div>
+              <figcaption>Balance beam</figcaption>
+            </figure>
+            <figure class="clip">
+              <div class="card card--landscape">
+                <video muted loop playsinline preload="none" data-autoplay
+                       poster="static/media/overlay/full_body_2.jpg" data-src="static/media/overlay/full_body_2.mp4"
+                       aria-label="Squat walks with predicted contacts and forces"></video>
+              </div>
+              <figcaption>Squat walks</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Future interactive 3D viewer (three.js) — mount point. Keep the section id and the .container layout. -->
+    <section class="section" id="viewer" hidden aria-label="Interactive 3D viewer">
+      <div class="container">
+        <div id="viewer-root"></div>
+      </div>
+    </section>
+
+    <!-- ===== Citation ===== -->
+    <section class="section" id="citation" aria-labelledby="citation-title">
+      <div class="container">
+        <header class="section-head">
+          <p class="eyebrow">Citation</p>
+          <h2 id="citation-title">BibTeX</h2>
+        </header>
+        <div class="bibtex">
+          <button class="bibtex__copy" type="button" aria-label="Copy BibTeX to clipboard">Copy</button>
+<pre><code id="bibtex-code">@article{akizhanov2026pact,
+  title   = {PACT: End-to-End Learning of Human Pose, Contacts, and Forces from Video},
+  author  = {Akizhanov, Rikhat and Zhang, Yangsong and Kaliazin, Nikolai and
+             Wolf, Peter and Nakamura, Yoshihiko and Fua, Pascal and
+             Pizzati, Fabio and Laptev, Ivan},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p>PACT · In submission · 2026</p>
+      <a href="#top">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script src="static/js/main.js" defer></script>
+</body>
+</html>
