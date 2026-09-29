@@ -6,7 +6,7 @@
 
 [Rikhat Akizhanov](#)<sup>1</sup> · [Yangsong Zhang](#)<sup>1</sup> · [Nikolai Kaliazin](#)<sup>1</sup> · [Peter Wolf](#)<sup>2</sup> · [Yoshihiko Nakamura](#)<sup>1</sup> · [Pascal Fua](#)<sup>3</sup> · [Fabio Pizzati](#)<sup>1</sup> · [Ivan Laptev](#)<sup>1</sup>
 
-<sup>1</sup> MBZUAI &nbsp;&nbsp; <sup>2</sup> Sensory-Motor Systems Lab, ETH Zürich &nbsp;&nbsp; <sup>3</sup> EPFL
+<sup>1</sup> MBZUAI &nbsp;&nbsp; <sup>2</sup> ETH Zürich &nbsp;&nbsp; <sup>3</sup> EPFL
 
 [**Project page**](https://rihat99.github.io/PACT/) &nbsp;|&nbsp; [**arXiv**](#) &nbsp;|&nbsp; *In submission, 2026*
 
