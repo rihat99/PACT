@@ -1,4 +1,4 @@
-/* PACT project page: nav state, lazy video loading, autoplay, toggle, copy. */
+/* PACT project page: nav state, lazy video loading, autoplay, synced groups, copy. */
 (function () {
   "use strict";
 
@@ -49,18 +49,27 @@
     return p && p.catch ? p.catch(function () {}) : Promise.resolve();
   }
 
-  // Start every video of a synced group, then align the others to the visible one.
+  // Synced group (clips of equal length): the first video leads and the others follow it.
+  function syncGroup(vids) {
+    var lead = vids[0];
+    vids.slice(1).forEach(function (v) {
+      if (v.readyState >= 1 && Math.abs(v.currentTime - lead.currentTime) > 0.12) {
+        v.currentTime = lead.currentTime;
+      }
+    });
+  }
+
   function playGroup(stage) {
     var vids = Array.prototype.slice.call(stage.querySelectorAll("video"));
     vids.forEach(ensureSrc);
-    Promise.all(vids.map(play)).then(function () {
-      var lead = stage.querySelector("video.is-active");
-      vids.forEach(function (v) {
-        if (v !== lead && Math.abs(v.currentTime - lead.currentTime) > 0.05) {
-          v.currentTime = lead.currentTime;
-        }
+    if (!stage.hasAttribute("data-synced")) {
+      stage.setAttribute("data-synced", "");
+      // Correct drift a few times per second while the lead plays (skipped right after a loop).
+      vids[0].addEventListener("timeupdate", function () {
+        if (vids[0].currentTime > 0.3) syncGroup(vids);
       });
-    });
+    }
+    Promise.all(vids.map(play)).then(function () { syncGroup(vids); });
   }
 
   function pauseAll(el) {
@@ -95,40 +104,6 @@
     }, { threshold: [0, 0.25] });
     autoTargets.forEach(function (el) { player.observe(el); });
   }
-
-  /* ----- Input vs PACT toggle ----- */
-  document.querySelectorAll(".toggle-card").forEach(function (card) {
-    var stage = card.querySelector(".toggle-stage");
-    var buttons = card.querySelectorAll(".segmented button");
-
-    buttons.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var from = stage.querySelector("video.is-active");
-        var to = stage.querySelector('video[data-view="' + btn.getAttribute("data-show") + '"]');
-        if (!to || to === from) return;
-
-        ensureSrc(to);
-        // Keep the two clips in sync: the newly shown one jumps to the current time.
-        if (to.readyState >= 1) {
-          to.currentTime = from.currentTime;
-        } else {
-          to.addEventListener("loadedmetadata", function () {
-            to.currentTime = from.currentTime;
-          }, { once: true });
-        }
-        if (!from.paused) play(to);
-        if (reduceMotion) from.pause();
-
-        from.classList.remove("is-active");
-        from.setAttribute("aria-hidden", "true");
-        to.classList.add("is-active");
-        to.removeAttribute("aria-hidden");
-        buttons.forEach(function (b) {
-          b.setAttribute("aria-pressed", String(b === btn));
-        });
-      });
-    });
-  });
 
   /* ----- Copy BibTeX ----- */
   var copyBtn = document.querySelector(".bibtex__copy");
