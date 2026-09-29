@@ -434,6 +434,20 @@ figure { margin: 0; }
   letter-spacing: -0.01em;
   color: var(--muted);
 }
+/* Key words: a soft full-height tint in the brand colour, text stays dark */
+.hl {
+  color: inherit;
+  padding: 0.04em 0.16em 0.06em;
+  margin: 0 -0.04em;
+  border-radius: 0.22em;
+  background: var(--hl);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.hl--pose     { --hl: rgba(47, 107, 255, 0.16); }
+.hl--contacts { --hl: rgba(232, 84, 30, 0.16); }
+.hl--forces   { --hl: rgba(224, 168, 0, 0.26); }
+
 .summary__rule {
   width: 48px;
   height: 3px;
