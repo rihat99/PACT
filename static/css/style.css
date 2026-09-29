@@ -434,19 +434,6 @@ figure { margin: 0; }
   letter-spacing: -0.01em;
   color: var(--muted);
 }
-/* Key words: a soft highlighter stroke in the brand colour, text stays dark */
-.hl {
-  color: inherit;
-  padding: 0 0.06em;
-  margin: 0 -0.06em;
-  background: linear-gradient(transparent 60%, var(--hl) 60%, var(--hl) 92%, transparent 92%);
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-.hl--pose     { --hl: rgba(47, 107, 255, 0.24); }
-.hl--contacts { --hl: rgba(232, 84, 30, 0.24); }
-.hl--forces   { --hl: rgba(224, 168, 0, 0.36); }
-
 .summary__rule {
   width: 48px;
   height: 3px;
