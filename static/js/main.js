@@ -13,11 +13,6 @@
   window.addEventListener("scroll", updateNav, { passive: true });
   updateNav();
 
-  /* ----- Placeholder links (arXiv, author pages) do nothing yet ----- */
-  document.querySelectorAll('[data-placeholder="true"]').forEach(function (a) {
-    a.addEventListener("click", function (e) { e.preventDefault(); });
-  });
-
   /* ----- Lazy source loading: set src from data-src when near the viewport ----- */
   function ensureSrc(video) {
     var src = video.getAttribute("data-src");
